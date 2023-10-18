@@ -5,12 +5,12 @@
 
 1.  使用命令初始化项目
     ```
-    cargo new Bevy-minesweeper 
+    cargo new bevy-minesweeper 
     ```
 
 2.  在项目中添加Bevy依赖
     ```
-    cd 
+    cd bevy-minesweeper 
     cargo add bevy
     ```
 
