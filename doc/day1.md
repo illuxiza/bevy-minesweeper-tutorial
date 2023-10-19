@@ -3,19 +3,19 @@
 ## 1、创建项目
 首先我们来创建项目，使用rust的命令创建一个项目并添加依赖。
 
-1.  使用命令初始化项目
-    ```
-    cargo new bevy-minesweeper 
-    ```
+使用命令初始化项目
+```
+cargo new bevy-minesweeper 
+```
 
-2.  在项目中添加Bevy依赖
-    ```
-    cd bevy-minesweeper 
-    cargo add bevy
-    ```
+在项目中添加Bevy依赖
+```
+cd bevy-minesweeper 
+cargo add bevy
+```
 
 
-完成后以上步骤后Cargo.toml大概是这个样子，代表项目创建成功了。
+完成后以上步骤后`Cargo.toml`大概是这个样子，代表项目创建成功了。
 ```
 [package]
 name = "bevy-minesweeper-tutorial"
@@ -29,7 +29,7 @@ bevy = "0.11.3"
 ## 2、体验Bevy
 ###  初始化Bevy项目并启动
     
-修改main.rs为如下代码
+修改`main.rs`为如下代码
 ```rust
 use bevy::prelude::*;
 
@@ -64,88 +64,88 @@ cargo run
     用户定义的各种逻辑。
     系统是指扫雷中的各种具体逻辑，例如初始化棋盘，点击翻开格子，标记格子，赢得游戏，重开游戏等。
 
-1.  首先我们就可以先定义一个资源，用来设定扫雷的基础选项:
-    创建目录resources，并在下面创建文件
-    ```rust
-    // board_options.rs
-    use bevy::prelude::*;
+首先我们就可以先定义一个资源，用来设定扫雷的基础选项:
+创建目录`resources`，并在下面创建文件
+```rust
+// board_options.rs
+use bevy::prelude::*;
 
-    #[derive(Resource)]
-    pub struct BoardOptions {
-        pub width: u16,
-        pub height: u16,
-        pub bomb_count: u16,
+#[derive(Resource)]
+pub struct BoardOptions {
+    pub width: u16,
+    pub height: u16,
+    pub bomb_count: u16,
+}
+
+impl Default for BoardOptions {
+    fn default() -> Self {
+        Self { width: 9, height: 9, bomb_count: 10 }
     }
+}
+``` 
+在struct上添加`#[derive(Resource)]`表示为一个资源，并且我们实现了Default，设置了棋盘的默认属性为9*9大小，10个雷
 
-    impl Default for BoardOptions {
-        fn default() -> Self {
-            Self { width: 9, height: 9, bomb_count: 10 }
-        }
-    }
-    ``` 
-    在struct上添加`#[derive(Resource)]`表示为一个资源，并且我们实现了Default，设置了棋盘的默认属性为9*9大小，10个雷
-
-    在main方法中添加自动初始化资源的方法，Bevy会帮你初始化该资源，后续就可以直接使用
-    ```rust
-        // main.rs
-        App::new()
-    ++      .init_resource::<BoardOptions>()
-            .add_plugins(DefaultPlugins).run();
-    ```
-    这样，我们就已经添加好我们的第一个资源：棋盘基础设置项。
-
-2.  我们来尝试在Bevy中输出这个设置：
-
-    在main方法中添加一个函数：
-    ```rust
+在`main()`中添加自动初始化资源的方法，Bevy会帮你初始化该资源，后续就可以直接使用
+```rust
     // main.rs
-    fn print_options(options: Res<BoardOptions>) {
-        println!("{:?}", options);
-    }
-    ```
-    这里`Res<BoardOptions>`就表示了在这个函数中我们需要用到之前定义的资源，直接写到入参就可以使用了。(这里为了输出，注意在BoardOptions上添加Debug特征)
-    接下来把函数添加到Bevy中，依然是main：
+    App::new()
+++      .init_resource::<BoardOptions>()
+        .add_plugins(DefaultPlugins).run();
+```
+这样，我们就已经添加好我们的第一个资源：棋盘基础设置项。
 
-    ```rust
-        // main.rs
-        App::new()
-            .init_resource::<BoardOptions>()
-            .add_plugins(DefaultPlugins).run();
-            .add_plugins(DefaultPlugins)
-    ++      .add_systems(Update, print_options)
-            .run();
-    ```
+我们来尝试在Bevy中输出这个设置：
 
-    重新运行一次程序`cargo run`, 就会看到控制台在不断循环输出了
-    ```
-    Res(BoardOptions { width: 9, height: 9, bomb_count: 10 })
-    ```
-    这是因为我们增加的这个函数使用的是`Update`，表示在Bevy每次更新渲染时都调用，所以会循环输出，这里可以把`Update`更新为`Startup`，就会看到输出只会在启动的时候输出一次了，这就是Bevy的系统System。
+在`main.rs`中添加一个函数：
+```rust
+// main.rs
+fn print_options(options: Res<BoardOptions>) {
+    println!("{:?}", options);
+}
+```
+这里`Res<BoardOptions>`就表示了在这个函数中我们需要用到之前定义的资源，直接写到入参就可以使用了。(这里为了输出，注意在BoardOptions上添加Debug特征)
+接下来把函数添加到Bevy中，依然是main：
 
-    我们只需要写逻辑， 并标明逻辑需要使用到的组件，资源等，并注册到Bevy中，剩下的，Bevy都帮我们完成了！
-
-    除了`Startup`，`Update`，Bevy中还有更多更复杂的调度方式，后续我们会慢慢接触。
-
-3.  现在资源和系统都有了初步的认识，还没有看到组件。
-    我们先在系统中添加一个基础的显示组件：镜头。
-    添加以下代码到main.rs并注册为`Startup`,这样在启动的时候就会为我们增加一个镜头组件。
-    ```rust
+```rust
     // main.rs
-    fn setup_camera(mut commands: Commands) {
-        commands.spawn(Camera2dBundle::default());
-    }
-    ```
-    ```rust
-        App::new()
-            .init_resource::<BoardOptions>()
-            .add_plugins(DefaultPlugins)
-    +++     .add_systems(Startup, setup_camera)
-            .add_systems(Startup, print_options)
-            .run();
-    ```
-    镜头是Bevy为我们预设好的组件，因为我们是2d游戏，我们需要使用2d镜头，commands是Bevy提供给我们管理系统中组件和资源的，使用spawn就可以把组件添加到系统中去了。
-    
-    现在我们运行程序`cargo run`，屏幕不再是黑色的了，显示为灰色，这是镜头的底色，我们成功的添加镜头到系统中。
-    ![](../assets/doc/day1/bevy-app-2.jpg)
+    App::new()
+        .init_resource::<BoardOptions>()
+        .add_plugins(DefaultPlugins).run();
+        .add_plugins(DefaultPlugins)
+++      .add_systems(Update, print_options)
+        .run();
+```
+
+重新运行一次程序`cargo run`, 就会看到控制台在不断循环输出了
+```
+Res(BoardOptions { width: 9, height: 9, bomb_count: 10 })
+```
+这是因为我们增加的这个函数使用的是`Update`，表示在Bevy每次更新渲染时都调用，所以会循环输出，这里可以把`Update`更新为`Startup`，就会看到输出只会在启动的时候输出一次了，这就是Bevy的系统System。
+
+我们只需要写逻辑， 并标明逻辑需要使用到的组件，资源等，并注册到Bevy中，剩下的，Bevy都帮我们完成了！
+
+除了`Startup`，`Update`，Bevy中还有更多更复杂的调度方式，后续我们会慢慢接触。
+
+现在资源和系统都有了初步的认识，还没有看到组件。
+我们先在系统中添加一个基础的显示组件：镜头。
+添加以下代码到main.rs并注册为`Startup`,这样在启动的时候就会为我们增加一个镜头组件。
+```rust
+// main.rs
+fn setup_camera(mut commands: Commands) {
+    commands.spawn(Camera2dBundle::default());
+}
+```
+```rust
+    App::new()
+        .init_resource::<BoardOptions>()
+        .add_plugins(DefaultPlugins)
++++     .add_systems(Startup, setup_camera)
+        .add_systems(Startup, print_options)
+        .run();
+```
+镜头是Bevy为我们预设好的组件，因为我们是2d游戏，我们需要使用2d镜头，`commands`是Bevy提供给我们管理系统中组件和资源的，使用`commands.spawn()`就可以把组件添加到系统中去了。
+
+现在我们运行程序`cargo run`，屏幕不再是黑色的了，显示为灰色，这是镜头的底色，我们成功的添加镜头到系统中。
+![](../assets/doc/day1/bevy-app-2.jpg)
 
 至此，我们对Bevy的整个ECS系统有了一个基础的认识，并成功启动了我们的项目（虽然他只有一个基础的设置数据），明天我们正式开始写扫雷逻辑，并且把他渲染到窗口中。
