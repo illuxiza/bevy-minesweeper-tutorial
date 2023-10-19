@@ -1,4 +1,3 @@
-mod components;
 mod resources;
 
 use bevy::{ prelude::*, render::camera::ScalingMode };
