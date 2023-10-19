@@ -21,6 +21,7 @@
 ```
 在`DefaultPlugins`中有一个`WindowPlugin`，我们可以单独对他的设置属性，添加标题和设置窗口大小为320*320
 现在我们看到窗口是一个不大不小的方形窗口
+
 ![](../assets/doc/day2/change-window.jpg)
 
 ## 2、创建棋盘
@@ -250,7 +251,9 @@ cargo add rand
 ```
 这里使用了一个SpriteBundle，是用来渲染精灵的，可以用来渲染图片，我们这里直接渲染一个白色的背景。
 运行程序，很好，现在可以看到屏幕这中间多了一个白色的方块。
+
 ![](../assets/doc/day2/render-board.jpg)
+
 我们继续，将所有的格子渲染到屏幕上，这时候就用到之前的图片了：
 ```rust
     fn setup_board(
@@ -340,7 +343,9 @@ let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atl
 
 
 再次运行程序，我们会看到所有格子都被渲染出来了，但是位置有一些偏移，并且和控制台渲染的方向是相反的
+
 ![](../assets/doc/day2/render-tile.jpg)
+
 这是因为bevy的渲染是以屏幕中心为(0,0)原点，向左为x正向，向上为y正向，z代表层级，z越大，层越靠前。
 所以我们渲染的格子会从中心开始，向左上方延展。
 接下来我们增加两个参数来变换一下位置：
@@ -380,6 +385,7 @@ let texture_atlas_handle: Handle<TextureAtlas> = texture_atlases.add(texture_atl
 ```
 
 再次运行程序，这次终于都对了
+
 ![](../assets/doc/day2/change-tile-position.jpg)
 
 ## 4、优化渲染
@@ -397,7 +403,9 @@ fn setup_camera(mut commands: Commands, options: Res<BoardOptions>) {
 }
 ```
 这样我们的镜头就变成和棋盘一样的大小
+
 ![](../assets/doc/day2/change-camera.jpg)
+
 但是图片变得有些模糊了，这是因为Bevy做了处理，我们可以通过设置改变
 在`main()`中
 ```rust
@@ -415,6 +423,7 @@ fn setup_camera(mut commands: Commands, options: Res<BoardOptions>) {
         )
 ```
 这里增加了一个图片设置，再次运行程序
+
 ![](../assets/doc/day2/change-image-plugin.jpg)
 
 非常完美！棋盘现在渲染的完全符合我们的想法并且非常清晰。
