@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Resource, Debug)]
+#[derive(Resource, Clone, Copy, Debug)]
 pub struct BoardOptions {
     pub width: u16,
     pub height: u16,
