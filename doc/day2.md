@@ -9,7 +9,7 @@
 ```rust
 ---     .add_plugins(DefaultPlugins)
 +++     .add_plugins(
-+++         DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
++++         DefaultPlugins.set(WindowPlugin {
 +++             primary_window: Some(Window {
 +++                 title: "MineSweeper".into(),
 +++                 resolution: (320.0, 320.0).into(),
@@ -198,15 +198,15 @@ impl Board {
 ```
 Res(BoardOptions { width: 9, height: 9, bomb_count: 10 })
 ----------------------------
-| 2  1  0  0  1  1  1  0  0|
-|-1  1  0  0  1 -1  1  0  0|
-| 4  2  0  0  1  1  1  0  0|
-|-1  2  1  2  1  1  0  0  0|
-| 2  2 -1  2 -1  3  2  1  0|
-| 0  1  1  2  2 -1 -1  1  0|
-| 2  1  0  0  1  2  2  1  0|
-|-1  1  0  0  1  1  1  1  1|
-| 2  1  0  0  1 -1  1  1 -1|
+| 1  2  2  1  0  0  1  1  1|
+| 2 -1 -1  1  0  0  2 -1  2|
+|-1  4  3  1  1  1  3 -1  2|
+| 2 -1  1  0  1 -1  3  2  2|
+| 1  1  1  0  1  1  2 -1  1|
+| 0  0  0  1  1  1  1  1  1|
+| 0  0  0  1 -1  1  0  0  0|
+| 0  0  0  1  1  1  0  1  1|
+| 0  0  0  0  0  0  0  1 -1|
 ----------------------------
 ```
 
