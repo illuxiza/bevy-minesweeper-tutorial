@@ -1,10 +1,10 @@
 # 第三天：增加单元翻开的逻辑
 
-
 ## 1、准备工作
-昨天我们展示了渲染棋盘，今天首先我们需要把他们都隐藏起来，只有点击的时候才显示实际格子。
-修改`setup_board()`代码，把渲染的格子都改成覆盖层：
 
+昨天我们展示了渲染棋盘，今天首先我们需要把他们都隐藏起来，只有点击的时候才显示实际格子。
+
+修改`setup_board()`代码，把渲染的格子都改成覆盖层：
 ```rust
 // main.rs
         .with_children(|commands| {
@@ -100,11 +100,13 @@ impl Coordinate {
 ```
 
 在Bevy中，使用spawn生成Entity时，一起加入的都会打包为同一个Entity，后续就可以绑定使用。
+
 当我们用到的时候就可以方便的根据坐标查询需要的格子属性并加以修改。
 
 接下来我们就来开始做翻开的事件吧！
 
 ## 2、增加翻开事件到系统中
+
 在`src`下增加`events.rs`保存我们所有的事件类型
 
 ```rust
@@ -117,7 +119,8 @@ use crate::components::Coordinate;
 pub struct TileUncoverEvent(pub Coordinate);
 ```
 
-我们还需要把事件注册到系统中
+我们还需要把事件注册到系统中。
+
 在`main()`中修改：
 
 ```rust
@@ -129,6 +132,7 @@ pub struct TileUncoverEvent(pub Coordinate);
 现在事件有了，但是我们需要先捕获鼠标点击的事件，然后才能发送翻开的事件去处理，我们先写一个捕获鼠标事件的处理方法。
 
 创建一个`systems`的目录，用来存放我们我们所有的系统。
+
 在`systems`下创建`input.rs`：
 
 ```rust
@@ -184,7 +188,8 @@ fn in_transform(transform: &GlobalTransform, position: Vec2) -> bool {
 }
 ```
 
-这里开始，用到了一个bevy中很重要的东西，只要在参数中写一个query，Bevy会自动帮我们找到我们需要的Entity交给我们使用
+这里开始，用到了一个bevy中很重要的东西，只要在参数中写一个query，Bevy会自动帮我们找到我们需要的Entity交给我们使用。
+
 处理事件写好，我们还需要将他注册到系统中：
 
 ```rust
@@ -194,8 +199,9 @@ fn in_transform(transform: &GlobalTransform, position: Vec2) -> bool {
         .run();
 ```
 
-因为我们要随时捕获鼠标的点击，所以应该注册为Update类型
-现在运行程序，点击到每格格子上的时候，控制台就会输出
+因为我们要随时捕获鼠标的点击，所以应该注册为Update类型。
+
+现在运行程序，点击到每格格子上的时候，控制台就会输出：
 ```
 Mouse button release: Coordinate { x: 6, y: 5 }
 Mouse button release: Coordinate { x: 0, y: 0 }
@@ -205,7 +211,9 @@ Mouse button release: Coordinate { x: 5, y: 6 }
 ```
 
 接下来我们继续编写翻开事件，
+
 在`systems`下创建`uncover.rs`
+
 ```rust
 // systems/uncover.rs
 use bevy::prelude::*;
@@ -253,7 +261,9 @@ pub fn uncover_tiles(
 当点击空白格时，应该连锁把周围的所有格子全部翻开，但是现在我们只是单独翻开一个格子，所以接下来我们再写一个事件，触发连锁
 
 首先我们需要记录我们翻开的格子，否则连锁的时候就会不断循环，导致系统错误。
+
 修改`board`增加存储操作的map并初始化，同时增加一个根据格子返回周围未操作的方法：
+
 ```rust
 // resources/board.rs
     pub struct Board {
@@ -285,7 +295,9 @@ pub fn uncover_tiles(
 +++         .collect()
 +++ }
 ```
+
 在`events.rs`中增加一个检查事件
+
 ```rust
 // events.rs
 +++ #[derive(Debug, Copy, Clone, Event)]
@@ -293,6 +305,7 @@ pub fn uncover_tiles(
 ```
 
 将写好的事件注册到系统中：
+
 ```rust
 // main()
         .add_event::<TileUncoverEvent>()
@@ -301,6 +314,7 @@ pub fn uncover_tiles(
 ```
 
 在`systems`下增加新的文件：
+
 ```rust
 // systems/check.rs
 use bevy::prelude::*;
@@ -351,12 +365,18 @@ pub fn check_tiles(
 ```
 
 这个事件用来检查掀开的格子的状态。
+
 例如：
+
 当点击空白时触发连锁。
+
 当点击到地雷，游戏结束(可以在课后自己先尝试实现这个功能)。
+
 当全部格子都点击完，游戏胜利(可以在课后自己先尝试实现这个功能)。
 
+
 但是这里我们还没有添加触发这个事件的地方，我们回到`uncover.rs`中，修改代码:
+
 ```rust
 // systems/uncover.rs
     pub fn uncover_tiles(
@@ -392,7 +412,9 @@ pub fn check_tiles(
 ![](../assets/doc/day3/uncover-chain.jpg)
 
 如图所示，点击一个空白格子，所有旁边的格子都会自动翻开，点到雷的时候，控制台也会输出一个bomb!
+
 但是控制台输出里，我们发现有些格子会重复的去检查，代表我们有些格子的事件重复了。
+
 我们可以在uncover中增加检查只有op_map中为0的格子才进行操作，这样同时也可以挡掉重复点击事件：
 
 ```rust
@@ -413,4 +435,5 @@ pub fn check_tiles(
 ```
 
 现在，我们的扫雷已经可以正常进行翻开的操作了。
+
 明天，我们会在这个基础上，继续增加标记的功能。
