@@ -1,18 +1,20 @@
+mod components;
 mod resources;
+mod events;
+mod systems;
 
 use bevy::{ prelude::*, render::camera::ScalingMode };
+use events::{TileUncoverEvent, TileCheckEvent};
 use resources::BoardOptions;
 
-use crate::resources::Board;
+use crate::{ resources::Board, components::Coordinate };
 
 fn main() {
     App::new()
         .init_resource::<BoardOptions>()
         .init_resource::<Board>()
         .add_plugins(
-            DefaultPlugins
-            .set(ImagePlugin::default_nearest())
-            .set(WindowPlugin {
+            DefaultPlugins.set(ImagePlugin::default_nearest()).set(WindowPlugin {
                 primary_window: Some(Window {
                     title: "MineSweeper".into(),
                     resolution: (320.0, 320.0).into(),
@@ -23,6 +25,13 @@ fn main() {
         )
         .add_systems(Startup, setup_camera)
         .add_systems(Startup, setup_board)
+        .add_systems(Update, (
+            systems::input::input_handler,
+            systems::uncover::uncover_tiles,
+            systems::check::check_tiles,
+        ))
+        .add_event::<TileUncoverEvent>()
+        .add_event::<TileCheckEvent>()
         .run();
 }
 
@@ -67,18 +76,13 @@ fn setup_board(
             },
         ))
         .with_children(|commands| {
-            for (y, row) in board.map.iter().enumerate() {
-                for (x, column) in row.iter().enumerate() {
-                    let index = match column {
-                        1..=8 => { *column as usize }
-                        -1 => { 10 }
-                        _ => { 0 }
-                    };
+            for y in 0..options.height {
+                for x in 0..options.width {
                     commands.spawn((
                         SpriteSheetBundle {
                             texture_atlas: texture_atlas_handle.clone(),
                             sprite: TextureAtlasSprite {
-                                index: index,
+                                index: 9,
                                 ..Default::default()
                             },
                             transform: Transform::from_xyz(
@@ -88,6 +92,7 @@ fn setup_board(
                             ),
                             ..default()
                         },
+                        Coordinate::new(x, y),
                     ));
                 }
             }

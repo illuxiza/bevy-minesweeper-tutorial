@@ -25,6 +25,7 @@ const SQUARE_COORD: [(i8, i8); 8] = [
 #[derive(Resource, Debug, Default)]
 pub struct Board {
     pub map: Vec<Vec<i8>>,
+    pub op_map: Vec<Vec<i8>>,
 }
 
 impl Board {
@@ -67,6 +68,15 @@ impl Board {
         self.map = map
             .chunks(width as usize)
             .map(|k| k.iter().cloned().collect::<Vec<_>>())
+            .collect();
+        self.op_map = (0..height)
+            .into_iter()
+            .map(|_|
+                (0..width)
+                    .into_iter()
+                    .map(|_| 0)
+                    .collect()
+            )
             .collect();
 
         for y in 0..height {
@@ -140,5 +150,12 @@ impl Board {
                 .join("\n"),
             separator
         )
+    }
+
+    pub fn adust_cover_around(&self, coord: (u16, u16)) -> Vec<(u16, u16)> {
+        self.safe_square_at(coord)
+            .into_iter()
+            .filter(|c| self.op_map[c.1 as usize][c.0 as usize] == 0)
+            .collect()
     }
 }
