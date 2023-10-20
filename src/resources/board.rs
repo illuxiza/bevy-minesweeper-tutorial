@@ -83,12 +83,6 @@ impl Board {
     fn is_bomb_at(&self, coord: (u16, u16)) -> bool {
         let y = coord.1 as usize;
         let x = coord.0 as usize;
-        if y >= self.map.len() {
-            return false;
-        }
-        if x >= self.map[y].len() {
-            return false;
-        }
         self.map[y][x] == -1
     }
 
@@ -98,20 +92,28 @@ impl Board {
         }
         let res = self
             .safe_square_at(coord)
+            .into_iter()
             .filter(|coord| self.is_bomb_at(*coord))
             .count();
         res as u8
     }
 
-    fn safe_square_at(&self, coord: (u16, u16)) -> impl Iterator<Item = (u16, u16)> {
+    fn safe_square_at(&self, coord: (u16, u16)) -> Vec<(u16, u16)> {
         SQUARE_COORD.iter()
             .copied()
             .map(move |tuple| (
                 (tuple.0 as i16) + (coord.0 as i16),
                 (tuple.1 as i16) + (coord.1 as i16),
             ))
-            .filter(|coord| coord.0 >= 0 && coord.1 >= 0)
+            .filter(
+                |coord|
+                    coord.0 >= 0 &&
+                    coord.1 >= 0 &&
+                    coord.1 < (self.map.len() as i16) &&
+                    coord.0 < (self.map[coord.1 as usize].len() as i16)
+            )
             .map(|coord| (coord.0 as u16, coord.1 as u16))
+            .collect()
     }
 
     pub fn console_output(&self) -> String {
