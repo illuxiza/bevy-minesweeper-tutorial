@@ -1,13 +1,14 @@
 use bevy::{ prelude::*, input::{ mouse::MouseButtonInput, ButtonState } };
 
-use crate::{ components::Coordinate, events::TileUncoverEvent };
+use crate::{ components::Coordinate, events::{TileUncoverEvent, TileMarkEvent} };
 
 pub fn input_handler(
     windows: Query<&mut Window>,
     camera: Query<(&Camera, &GlobalTransform)>,
     tiles: Query<(&Coordinate, &GlobalTransform)>,
     mut button_evr: EventReader<MouseButtonInput>,
-    mut tile_uncover_ev: EventWriter<TileUncoverEvent>
+    mut tile_uncover_ev: EventWriter<TileUncoverEvent>,
+    mut tile_mark_ev: EventWriter<TileMarkEvent>
 ) {
     let window = windows.single();
     let (camera, camera_transform) = camera.single();
@@ -27,7 +28,10 @@ pub fn input_handler(
                     match event.button {
                         // 当点击左键时，发送一个翻开的事件
                         MouseButton::Left => {
-                            tile_uncover_ev.send(TileUncoverEvent(coord.clone()));
+                            tile_uncover_ev.send(TileUncoverEvent(coord.clone(), false));
+                        }
+                        MouseButton::Right => {
+                            tile_mark_ev.send(TileMarkEvent(coord.clone()));
                         }
                         _ => {}
                     }

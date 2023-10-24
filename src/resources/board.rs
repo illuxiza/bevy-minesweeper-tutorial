@@ -155,7 +155,7 @@ impl Board {
     pub fn adust_cover_around(&self, coord: (u16, u16)) -> Vec<(u16, u16)> {
         self.safe_square_at(coord)
             .into_iter()
-            .filter(|c| self.op_map[c.1 as usize][c.0 as usize] == 0)
+            .filter(|c| self.op_map[c.1 as usize][c.0 as usize] != 1)
             .collect()
     }
 }
