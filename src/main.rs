@@ -4,10 +4,17 @@ mod events;
 mod systems;
 
 use bevy::{ prelude::*, render::camera::ScalingMode };
-use events::{ TileUncoverEvent, TileCheckEvent, TileMarkEvent };
+use events::{ TileUncoverEvent, TileCheckEvent, TileMarkEvent, GameOverEvent, GameWinEvent };
 use resources::BoardOptions;
 
 use crate::resources::Board;
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum GameState {
+    #[default]
+    InGame,
+    Over,
+}
 
 fn main() {
     App::new()
@@ -24,16 +31,24 @@ fn main() {
             })
         )
         .add_systems(Startup, setup_camera)
-        .add_systems(Startup, systems::board::setup_board)
-        .add_systems(Update, (
-            systems::input::input_handler,
-            systems::tiles::uncover_tiles,
-            systems::tiles::check_tiles,
-            systems::tiles::mark_tiles,
-        ))
+        .add_systems(OnEnter(GameState::InGame), systems::board::setup_board)
+        .add_systems(
+            Update,
+            (
+                systems::input::input_handler,
+                systems::tiles::uncover_tiles,
+                systems::tiles::check_tiles,
+                systems::tiles::mark_tiles,
+                systems::over::game_over,
+                systems::over::game_win,
+            ).run_if(in_state(GameState::InGame))
+        )
+        .add_state::<GameState>()
         .add_event::<TileUncoverEvent>()
         .add_event::<TileCheckEvent>()
         .add_event::<TileMarkEvent>()
+        .add_event::<GameOverEvent>()
+        .add_event::<GameWinEvent>()
         .run();
 }
 

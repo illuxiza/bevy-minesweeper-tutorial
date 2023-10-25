@@ -10,3 +10,9 @@ pub struct TileCheckEvent(pub Coordinate);
 
 #[derive(Debug, Copy, Clone, Event)]
 pub struct TileMarkEvent(pub Coordinate);
+
+#[derive(Debug, Copy, Clone, Event)]
+pub struct GameOverEvent(pub Coordinate);
+
+#[derive(Debug, Copy, Clone, Event)]
+pub struct GameWinEvent;

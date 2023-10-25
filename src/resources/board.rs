@@ -158,4 +158,17 @@ impl Board {
             .filter(|c| self.op_map[c.1 as usize][c.0 as usize] != 1)
             .collect()
     }
+
+    pub fn is_complete(&self) -> bool {
+        self.map
+            .concat()
+            .into_iter()
+            .filter(|c| *c >= 0)
+            .count() ==
+            self.op_map
+                .concat()
+                .into_iter()
+                .filter(|c| *c == 1)
+                .count()
+    }
 }

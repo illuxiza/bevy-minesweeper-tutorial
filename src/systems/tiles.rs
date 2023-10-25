@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    events::{ TileUncoverEvent, TileCheckEvent, TileMarkEvent },
+    events::{ TileUncoverEvent, TileCheckEvent, TileMarkEvent, GameOverEvent, GameWinEvent },
     resources::Board,
     components::Coordinate,
 };
@@ -45,7 +45,9 @@ pub fn uncover_tiles(
 pub fn check_tiles(
     board: Res<Board>,
     mut tile_uncover_ev: EventWriter<TileUncoverEvent>,
-    mut tile_check_ev: EventReader<TileCheckEvent>
+    mut tile_check_ev: EventReader<TileCheckEvent>,
+    mut game_over_ev: EventWriter<GameOverEvent>,
+    mut game_win_ev: EventWriter<GameWinEvent>,
 ) {
     for ev in tile_check_ev.iter() {
         let select = ev.0;
@@ -62,7 +64,11 @@ pub fn check_tiles(
         }
         // 当格子是地雷时，输出爆炸
         if num == -1 {
-            println!("bomb!");
+            game_over_ev.send(GameOverEvent(select));
+            break;
+        }
+        if board.is_complete() {
+            game_win_ev.send(GameWinEvent);
         }
     }
 }
