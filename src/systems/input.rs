@@ -12,7 +12,7 @@ pub fn input_handler(
     let window = windows.single();
     let (camera, camera_transform) = camera.single();
 
-    for event in button_evr.iter() {
+    for event in button_evr.read() {
         // 捕获松开鼠标的事件
         if event.state == ButtonState::Released {
             // 将鼠标点击的位置转换为相机中的实际位置
