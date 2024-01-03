@@ -12,7 +12,7 @@ pub fn uncover_tiles(
     mut tile_uncover_ev: EventReader<TileUncoverEvent>,
     mut tile_check_ev: EventWriter<TileCheckEvent>
 ) {
-    for ev in tile_uncover_ev.iter() {
+    for ev in tile_uncover_ev.read() {
         let select: Coordinate = ev.0;
         let auto = ev.1;
         let op = board.op_map[select.y as usize][select.x as usize];
@@ -47,7 +47,7 @@ pub fn check_tiles(
     mut tile_uncover_ev: EventWriter<TileUncoverEvent>,
     mut tile_check_ev: EventReader<TileCheckEvent>
 ) {
-    for ev in tile_check_ev.iter() {
+    for ev in tile_check_ev.read() {
         let select = ev.0;
         println!("Check Tile: {:?}", select);
         let num = board.map[select.y as usize][select.x as usize];
@@ -72,7 +72,7 @@ pub fn mark_tiles(
     mut tiles: Query<(&mut TextureAtlasSprite, &Coordinate)>,
     mut tile_mark_ev: EventReader<TileMarkEvent>
 ) {
-    for ev in tile_mark_ev.iter() {
+    for ev in tile_mark_ev.read() {
         let select = ev.0;
         let op = board.op_map[select.y as usize][select.x as usize];
         if op == 1 {
