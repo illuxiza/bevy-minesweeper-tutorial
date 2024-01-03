@@ -8,7 +8,7 @@ pub fn game_over(
     mut game_over_ev: EventReader<GameOverEvent>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    for ev in game_over_ev.iter() {
+    for ev in game_over_ev.read() {
         next_state.set(GameState::Over);
         let select = ev.0;
         for (mut sprite, coord) in &mut tiles {
@@ -34,7 +34,7 @@ pub fn game_win(
     mut game_win_ev: EventReader<GameWinEvent>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    for _ in game_win_ev.iter() {
+    for _ in game_win_ev.read() {
         println!("Win!");
         next_state.set(GameState::Over);
         for (mut sprite, coord) in &mut tiles {

@@ -23,7 +23,7 @@ pub fn game_over(
     mut tiles: Query<(&mut TextureAtlasSprite, &Coordinate)>,
     mut game_over_ev: EventReader<GameOverEvent>
 ) {
-    for ev in game_over_ev.iter() {
+    for ev in game_over_ev.read() {
         let select = ev.0;
         for (mut sprite, coord) in &mut tiles {
             let num = board.map[coord.y as usize][coord.x as usize];
@@ -101,7 +101,7 @@ pub enum GameState {
         mut game_over_ev: EventReader<GameOverEvent>,
 +++     mut next_state: ResMut<NextState<GameState>>,
     ) {
-        for ev in game_over_ev.iter() {
+        for ev in game_over_ev.read() {
 +++         next_state.set(GameState::Over);
             /// ....
     }
@@ -131,7 +131,7 @@ pub struct GameWinEvent;
         mut game_win_ev: EventReader<GameWinEvent>,
         mut next_state: ResMut<NextState<GameState>>,
     ) {
-        for _ in game_win_ev.iter() {
+        for _ in game_win_ev.read() {
             println!("Win!");
             next_state.set(GameState::Over);
             for (mut sprite, coord) in &mut tiles {
