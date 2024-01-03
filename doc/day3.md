@@ -151,7 +151,7 @@ pub fn input_handler(
     let window = windows.single();
     let (camera, camera_transform) = camera.single();
 
-    for event in button_evr.iter() {
+    for event in button_evr.read() {
         // 捕获松开鼠标的事件
         if event.state == ButtonState::Released {
             // 将鼠标点击的位置转换为相机中的实际位置
@@ -225,7 +225,7 @@ pub fn uncover_tiles(
     mut tiles: Query<(&mut TextureAtlasSprite, &Coordinate)>,
     mut tile_uncover_ev: EventReader<TileUncoverEvent>
 ) {
-    for ev in tile_uncover_ev.iter() {
+    for ev in tile_uncover_ev.read() {
         let select = ev.0;
         // 找到对应坐标实体的精灵，修改index为实际单元格
         for (mut sprite, coord) in &mut tiles {
@@ -330,7 +330,7 @@ pub fn check_tiles(
     mut tile_uncover_ev: EventWriter<TileUncoverEvent>,
     mut tile_check_ev: EventReader<TileCheckEvent>
 ) {
-    for ev in tile_check_ev.iter() {
+    for ev in tile_check_ev.read() {
         let select = ev.0;
         println!("Check Tile: {:?}", select);
         let num = board.map[select.y as usize][select.x as usize];
@@ -386,7 +386,7 @@ pub fn check_tiles(
         mut tile_uncover_ev: EventReader<TileUncoverEvent>,
 +++     mut tile_check_ev: EventWriter<TileCheckEvent>
     ) {
-        for ev in tile_uncover_ev.iter() {
+        for ev in tile_uncover_ev.read() {
             let select = ev.0;
             // 找到对应坐标实体的精灵，修改index为实际单元格
             for (mut sprite, coord) in &mut tiles {
@@ -424,7 +424,7 @@ pub fn check_tiles(
         mut tile_uncover_ev: EventReader<TileUncoverEvent>,
         mut tile_check_ev: EventWriter<TileCheckEvent>
     ) {
-        for ev in tile_uncover_ev.iter() {
+        for ev in tile_uncover_ev.read() {
             let select = ev.0;
 +++         if board.op_map[select.y as usize][select.x as usize] != 0 {
 +++             continue;
