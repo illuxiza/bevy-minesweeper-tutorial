@@ -1,6 +1,6 @@
 # Bevy 扫雷游戏开发教程
 
-本教程用于介绍如何使用[Bevy(0.11.3)](https://github.com/bevyengine/bevy)开发一个类似windows扫雷游戏。
+本教程用于介绍如何使用[Bevy(0.12.1)](https://github.com/bevyengine/bevy)开发一个类似windows扫雷游戏。
 希望你能在这里入门Bevy并享受使用它开发游戏的乐趣。
 
 

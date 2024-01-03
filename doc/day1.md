@@ -23,7 +23,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.11.3"
+bevy = "0.12.1"
 ```
 
 ## 2、体验Bevy
