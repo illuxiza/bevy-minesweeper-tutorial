@@ -26,6 +26,11 @@
 
 ## 2、创建棋盘
 
+生成棋盘需要用到随机数，我们增加一个`rand`包
+```
+cargo add rand
+```
+
 接下来，我们来创建一个`board`资源，用来存储棋盘上的地雷和每格周围的地雷数量
 在resources目录下创建board.rs文件并导出，直接上代码：
 ```rust
@@ -69,7 +74,7 @@ impl Board {
         let mut rng = thread_rng();
         let mut map: Vec<i8>;
         if bomb_count < area / 2 {
-            map = (0..height * width)
+            map = (0..area)
                 .into_iter()
                 .map(|i: u16| if i < area - bomb_count { 0 } else { -1 })
                 .collect();
@@ -82,7 +87,7 @@ impl Board {
                 }
             }
         } else {
-            map = (0..height * width)
+            map = (0..area)
                 .into_iter()
                 .map(|i| if i < bomb_count { -1 } else { 0 })
                 .collect();
@@ -218,11 +223,6 @@ Res(BoardOptions { width: 9, height: 9, bomb_count: 10 })
 接下来我们需要用到一个图片资源
 ![](../assets/texture.png)
 将其放到`assets`目录下，这是Bevy静态资源的默认目录
-
-生成棋盘需要用到随机数，我们增加一个`rand`包
-```
-cargo add rand
-```
 
 我们先在屏幕上渲染一个棋盘的基底，我们的图片尺寸是16\*16的，所以代码中所有单元格以16\*16为标准。
 将print_options改名为setup_board并在原来的代码后追加代码：
