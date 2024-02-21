@@ -37,7 +37,7 @@ impl Board {
         let mut rng = thread_rng();
         let mut map: Vec<i8>;
         if bomb_count < area / 2 {
-            map = (0..height * width)
+            map = (0..area)
                 .into_iter()
                 .map(|i: u16| if i < area - bomb_count { 0 } else { -1 })
                 .collect();
@@ -50,7 +50,7 @@ impl Board {
                 }
             }
         } else {
-            map = (0..height * width)
+            map = (0..area)
                 .into_iter()
                 .map(|i| if i < bomb_count { -1 } else { 0 })
                 .collect();
